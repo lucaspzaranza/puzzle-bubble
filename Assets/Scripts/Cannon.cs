@@ -5,13 +5,19 @@ using UnityEngine;
 public class Cannon : MonoBehaviour
 {
     [SerializeField]
-    private float _upperLimitDegree = 90f;
+    private float _leftLimitDegree = 30f;
 
     [SerializeField]
-    private float _lowerLimitDegree = 345f;
+    private float _rightLimitDegree = 330f;
 
     [SerializeField] private float _rotationSpeed;
     public float RotationSpeed => _rotationSpeed;
+
+    [SerializeField] private GameObject _blueBullet;
+    [SerializeField] private GameObject _whiteBullet;
+    [SerializeField] private Transform _bulletPos;
+
+    private int _direction = 0;
 
     void Start()
     {
@@ -20,19 +26,31 @@ public class Cannon : MonoBehaviour
 
     void Update()
     {
-        
+        if(_direction != 0)
+            Rotate(_direction);
     }
 
-    public virtual void Aim(float direction)
+    public void SetRotationCannon(int directionToRotate)
     {
-        transform.Rotate(Vector3.forward * direction * _rotationSpeed * Time.deltaTime);
+        _direction = directionToRotate;
+    }
 
-        float eulerZ = transform.localEulerAngles.z;
+    public virtual void Rotate(int direction)
+    {
+        transform.parent.Rotate(Vector3.forward * direction * _rotationSpeed * Time.deltaTime);
 
-        if (direction == 1 && eulerZ > _upperLimitDegree && eulerZ < _lowerLimitDegree)
-            transform.localEulerAngles = new Vector3(0f, 0f,
-                Mathf.Clamp(eulerZ, 0f, _upperLimitDegree));
-        else if (direction == -1 && eulerZ > _upperLimitDegree && eulerZ < 360f && eulerZ < _lowerLimitDegree)
-            transform.localEulerAngles = new Vector3(0f, 0f, _lowerLimitDegree);
+        float eulerZ = transform.parent.localEulerAngles.z;
+
+        if (direction == 1 && eulerZ > _leftLimitDegree && eulerZ < _rightLimitDegree)
+            transform.parent.localEulerAngles = new Vector3(0f, 0f,
+                Mathf.Clamp(eulerZ, 0f, _leftLimitDegree));
+        else if (direction == -1 && eulerZ > _leftLimitDegree && eulerZ < 360f && eulerZ < _rightLimitDegree)
+            transform.parent.localEulerAngles = new Vector3(0f, 0f, _rightLimitDegree);
+    }
+
+    public void Shoot(BulletType type)
+    {
+        var bulletPrefab = type == BulletType.White ? _whiteBullet : _blueBullet;
+        var bulletInstance = Instantiate(bulletPrefab, _bulletPos.position, transform.rotation);
     }
 }
