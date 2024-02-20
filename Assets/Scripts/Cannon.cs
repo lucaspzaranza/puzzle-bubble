@@ -19,11 +19,6 @@ public class Cannon : MonoBehaviour
 
     private int _direction = 0;
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if(_direction != 0)
@@ -35,7 +30,7 @@ public class Cannon : MonoBehaviour
         _direction = directionToRotate;
     }
 
-    public virtual void Rotate(int direction)
+    public void Rotate(int direction)
     {
         transform.parent.Rotate(Vector3.forward * direction * _rotationSpeed * Time.deltaTime);
 
